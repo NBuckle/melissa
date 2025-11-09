@@ -1,41 +1,47 @@
 /**
- * Withdrawals Page (Admin Only)
+ * Withdrawals Management Page
  *
- * Manage distributions and withdrawals.
- * (Placeholder - will be implemented in Phase 4)
+ * Admin-only page for creating and viewing withdrawals/distributions.
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { WithdrawalForm } from '@/components/features/withdrawals/withdrawal-form'
+import { WithdrawalsList } from '@/components/features/withdrawals/withdrawals-list'
+import {
+  getDistributionTypes,
+  getKitTemplates,
+  getRecentWithdrawals,
+} from '@/app/actions/withdrawals'
+import { getActiveItems } from '@/app/actions/items'
 
-export default function WithdrawalsPage() {
+export default async function WithdrawalsPage() {
+  // Fetch all required data
+  const { types: distributionTypes } = await getDistributionTypes()
+  const { templates: kitTemplates } = await getKitTemplates()
+  const { items } = await getActiveItems()
+  const { withdrawals } = await getRecentWithdrawals(20)
+
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Withdrawals & Distributions</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Withdrawals & Distributions
+        </h1>
         <p className="text-gray-600 mt-2">
-          Manage item distributions and withdrawals
+          Record distributions, kit creation, and inventory withdrawals
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Coming Soon - Phase 4</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600">
-            Withdrawal management will be implemented in Phase 4. Features include:
-          </p>
-          <ul className="list-disc list-inside mt-4 space-y-2 text-gray-600">
-            <li>Create new withdrawals (manual or kit-based)</li>
-            <li>Church/location deliveries tracking</li>
-            <li>Package kit creation</li>
-            <li>Expired goods removal logs</li>
-            <li>Stock corrections</li>
-            <li>Withdrawal history</li>
-            <li>Distribution reports</li>
-          </ul>
-        </CardContent>
-      </Card>
+      {/* Create New Withdrawal Form */}
+      <WithdrawalForm
+        distributionTypes={distributionTypes}
+        kitTemplates={kitTemplates}
+        items={items}
+      />
+
+      {/* Recent Withdrawals List */}
+      <WithdrawalsList withdrawals={withdrawals} />
     </div>
   )
 }
