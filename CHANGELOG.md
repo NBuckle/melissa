@@ -436,13 +436,15 @@ This prevents repeating work and keeps us aligned!
   - ✅ Items Management (Admin)
   - ✅ Withdrawals, Users, Reports pages (placeholders)
 
-### ⚠️ Pending Actions:
-1. **Import Historical Data** (Optional - can be done later)
-   - The Google Sheets import script is ready
-   - Currently blocked by RLS - needs service role key or policy adjustment
-   - Can test app without historical data first
+### ✅ Data Import Completed:
+- **75 historical collections** imported from Google Sheets
+- **904 collection items** across all imports
+- **Master inventory** now populated with accurate stock levels
+- Import script uses service role key to bypass RLS
+- Collections attributed to existing user profile
 
-2. **Create first user account:**
+### ⚠️ Pending Actions:
+1. **Create first user account** (if not done yet):
    - Navigate to http://localhost:3000/login
    - Enter your email for magic link
    - Complete authentication flow
