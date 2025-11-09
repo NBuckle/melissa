@@ -428,15 +428,18 @@ This prevents repeating work and keeps us aligned!
    - 90+ items seeded
    - RLS policies active (data secured)
 
-2. **After migrations, run data import:**
-   ```bash
-   npm run import-data
-   ```
+2. **Import Historical Data** (Optional - can be done later)
+   - The Google Sheets import script is ready
+   - Currently blocked by RLS - needs service role key or policy adjustment
+   - Can test app without historical data first
 
 3. **Test the application:**
    ```bash
    npm run dev
    ```
+   - Create your first account at http://localhost:3000/login
+   - Test collection submission
+   - Verify inventory pages work
 
 ---
 
