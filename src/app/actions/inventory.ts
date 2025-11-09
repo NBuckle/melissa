@@ -35,7 +35,7 @@ export async function getDailyInventory(date?: string) {
   const { data, error } = await supabase
     .from('daily_inventory')
     .select('*')
-    .eq('date', targetDate)
+    .eq('submission_date', targetDate)
     .order('item_name')
 
   if (error) {

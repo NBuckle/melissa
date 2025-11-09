@@ -12,9 +12,10 @@ import { format } from 'date-fns'
 export default async function DailyInventoryPage({
   searchParams,
 }: {
-  searchParams: { date?: string }
+  searchParams: Promise<{ date?: string }>
 }) {
-  const selectedDate = searchParams.date || new Date().toISOString().split('T')[0]
+  const params = await searchParams
+  const selectedDate = params.date || new Date().toISOString().split('T')[0]
   const { inventory, error } = await getDailyInventory(selectedDate)
 
   // Group inventory by category
@@ -30,7 +31,7 @@ export default async function DailyInventoryPage({
   const categoryOrder = ['Baby', 'Bathroom', 'First Aid', 'Pantry', 'Other']
   const sortedCategories = categoryOrder.filter(cat => inventoryByCategory[cat])
 
-  const totalCollected = inventory.reduce((sum: number, item: any) => sum + (item.total_collected || 0), 0)
+  const totalCollected = inventory.reduce((sum: number, item: any) => sum + (item.daily_collected || 0), 0)
 
   return (
     <div className="space-y-8">
@@ -138,7 +139,7 @@ export default async function DailyInventoryPage({
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                             <span className="font-semibold text-green-700">
-                              {item.total_collected.toLocaleString()}
+                              {item.daily_collected.toLocaleString()}
                             </span>
                           </td>
                         </tr>

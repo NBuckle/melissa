@@ -27,7 +27,7 @@ export async function getItems() {
     .from('items')
     .select(`
       *,
-      category:item_categories(id, name, display_order)
+      category:item_categories(id, name, order_index)
     `)
     .order('name')
 
@@ -49,7 +49,7 @@ export async function getActiveItems() {
     .from('items')
     .select(`
       *,
-      category:item_categories(id, name, display_order)
+      category:item_categories(id, name, order_index)
     `)
     .eq('is_active', true)
     .order('name')
@@ -71,7 +71,7 @@ export async function getCategories() {
   const { data, error } = await supabase
     .from('item_categories')
     .select('*')
-    .order('display_order')
+    .order('order_index')
 
   if (error) {
     console.error('Error fetching categories:', error)
