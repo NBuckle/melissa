@@ -62,9 +62,9 @@ export function Navigation({ role }: NavigationProps) {
     },
     {
       label: 'Reports',
-      href: '/admin/reports',
+      href: '/reports',
       icon: '📈',
-      roles: ['admin'],
+      roles: ['admin', 'data_entry'],
     },
   ]
 
