@@ -52,10 +52,11 @@ export async function getDailyInventory(date?: string) {
 export async function getLowStockItems() {
   const supabase = await createClient()
 
+  // Fetch all active items and filter in JavaScript
+  // (Supabase doesn't support column-to-column comparison in filters)
   const { data, error } = await supabase
     .from('master_inventory')
     .select('*')
-    .filter('current_stock', 'lte', 'low_stock_threshold')
     .eq('is_active', true)
     .order('current_stock')
 
@@ -64,7 +65,12 @@ export async function getLowStockItems() {
     return { items: [], error: error.message }
   }
 
-  return { items: data, error: null }
+  // Filter items where current_stock <= low_stock_threshold
+  const lowStockItems = data?.filter(
+    item => item.current_stock <= item.low_stock_threshold
+  ) || []
+
+  return { items: lowStockItems, error: null }
 }
 
 /**
@@ -106,12 +112,10 @@ export async function getInventoryStats() {
     0
   ) || 0
 
-  // Get low stock count
-  const { count: lowStockCount } = await supabase
-    .from('master_inventory')
-    .select('*', { count: 'exact', head: true })
-    .filter('current_stock', 'lte', 'low_stock_threshold')
-    .eq('is_active', true)
+  // Get low stock count (filter in JavaScript due to column comparison limitation)
+  const lowStockCount = inventoryData?.filter(
+    item => item.is_active && item.current_stock <= item.low_stock_threshold
+  ).length || 0
 
   return {
     totalItems: totalItems || 0,
@@ -119,6 +123,6 @@ export async function getInventoryStats() {
     totalStock,
     totalCollected,
     totalWithdrawn,
-    lowStockCount: lowStockCount || 0,
+    lowStockCount,
   }
 }
