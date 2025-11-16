@@ -8,12 +8,13 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function CollectionSuccessPage({
+export default async function CollectionSuccessPage({
   searchParams,
 }: {
-  searchParams: { id?: string }
+  searchParams: Promise<{ id?: string }>
 }) {
-  const collectionId = searchParams.id
+  const params = await searchParams
+  const collectionId = params.id
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
