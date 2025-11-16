@@ -2,9 +2,92 @@
 
 This directory contains scripts for importing data from Google Sheets into Supabase.
 
-## Import Google Sheets Data
+## 📦 Import from Dated Subfolders (Recommended)
+
+**Script:** `import-from-dated-folder.mjs`
+**Command:** `npm run import-dated <subfolder>`
+
+This is the recommended script for ongoing imports. It handles incremental updates and prevents duplicates.
+
+### Features:
+
+✅ **No Duplicates** - Checks timestamps before importing
+✅ **Safe Re-runs** - Can be run multiple times safely
+✅ **Dated Organization** - Works with subfolders like `nov16`, `dec01`, etc.
+✅ **Progress Tracking** - Shows what's new vs. skipped
+
+### Usage:
+
+```bash
+# Import from a specific dated subfolder
+npm run import-dated nov16
+
+# For future imports
+npm run import-dated dec01
+npm run import-dated dec15
+```
+
+### Folder Structure:
+
+```
+old google sheets/
+├── nov16/
+│   ├── Inventory - Melissa Donations - Form Responses.csv
+│   └── Inventory - Melissa Donations - Master Inventory.csv
+├── dec01/
+│   └── ...
+└── dec15/
+    └── ...
+```
+
+### Example Output:
+
+```
+🚀 Starting Google Sheets Data Import
+📁 Subfolder: nov16
+============================================================
+✅ Connected to Supabase
+
+📊 Current Database Status:
+   - Total collections: 75
+   - Total collection items: 904
+   - Date range: 2025-11-01 to 2025-11-07
+
+📥 Importing collections from Form Responses...
+Found 123 form responses in CSV
+
+✅ Import Summary:
+   - New collections: 29
+   - Duplicates (skipped): 75
+   - Invalid/Empty (skipped): 19
+
+🔄 Refreshing master inventory view...
+✅ Inventory view refreshed
+
+📊 Current Database Status:
+   - Total collections: 104
+   - Total collection items: 1374
+   - Date range: 2025-11-01 to 2025-11-15
+```
+
+### Workflow for Regular Updates:
+
+1. Download Google Sheets as CSV
+2. Create new dated folder: `old google sheets/nov30/`
+3. Place CSV files in the folder
+4. Run: `npm run import-dated nov30`
+5. Check results and verify in app
+
+---
+
+## 📥 Initial Import (Legacy)
+
+**Script:** `import-google-sheets-data.mjs`
+**Command:** `npm run import-data`
 
 This script imports historical collection data from your old Google Sheets system.
+
+⚠️ **Warning:** This script does NOT check for duplicates. Use `import-dated` instead for ongoing imports.
 
 ### What it does:
 

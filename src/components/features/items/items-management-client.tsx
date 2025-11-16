@@ -40,20 +40,40 @@ export function ItemsManagementClient({
 }: ItemsManagementClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
+  const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [showModal, setShowModal] = useState(false)
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    const matchesStatus =
-      filterStatus === 'all' ||
-      (filterStatus === 'active' && item.is_active) ||
-      (filterStatus === 'inactive' && !item.is_active)
+  // Define category order
+  const categoryOrder = ['Baby', 'Bathroom', 'First Aid', 'Pantry', 'Other']
 
-    return matchesSearch && matchesStatus
-  })
+  const filteredItems = items
+    .filter((item) => {
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+      const matchesStatus =
+        filterStatus === 'all' ||
+        (filterStatus === 'active' && item.is_active) ||
+        (filterStatus === 'inactive' && !item.is_active)
+      const matchesCategory =
+        filterCategory === 'all' ||
+        item.category.name === filterCategory
+
+      return matchesSearch && matchesStatus && matchesCategory
+    })
+    .sort((a, b) => {
+      // First, sort by category order
+      const categoryA = categoryOrder.indexOf(a.category.name)
+      const categoryB = categoryOrder.indexOf(b.category.name)
+
+      if (categoryA !== categoryB) {
+        return categoryA - categoryB
+      }
+
+      // Then, sort alphabetically within the same category
+      return a.name.localeCompare(b.name)
+    })
 
   const handleAddNew = () => {
     setSelectedItem(null)
@@ -81,35 +101,62 @@ export function ItemsManagementClient({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
-              <div className="flex-1">
-                <Input
-                  placeholder="Search items..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            {/* Search Bar */}
+            <div className="mb-4">
+              <Input
+                placeholder="Search items..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Category Tabs and Status Toggle */}
+            <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+              {/* Category Tabs - Left */}
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant={filterCategory === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilterCategory('all')}
+                  className={filterCategory === 'all' ? 'bg-blue-700 hover:bg-blue-800 text-white font-semibold' : ''}
+                >
+                  All
+                </Button>
+                {['Baby', 'Bathroom', 'First Aid', 'Pantry', 'Other'].map((category) => (
+                  <Button
+                    key={category}
+                    variant={filterCategory === category ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFilterCategory(category)}
+                    className={filterCategory === category ? 'bg-blue-700 hover:bg-blue-800 text-white font-semibold' : ''}
+                  >
+                    {category}
+                  </Button>
+                ))}
               </div>
+
+              {/* Active/Inactive Toggle - Right */}
               <div className="flex space-x-2">
                 <Button
                   variant={filterStatus === 'all' ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => setFilterStatus('all')}
                 >
-                  All
+                  All Items
                 </Button>
                 <Button
                   variant={filterStatus === 'active' ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => setFilterStatus('active')}
                 >
-                  Active
+                  Active Only
                 </Button>
                 <Button
                   variant={filterStatus === 'inactive' ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => setFilterStatus('inactive')}
                 >
-                  Inactive
+                  Inactive Only
                 </Button>
               </div>
             </div>

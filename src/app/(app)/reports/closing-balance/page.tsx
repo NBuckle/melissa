@@ -10,6 +10,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { DateRangeSelector, type DateRange } from '@/components/features/reports/date-range-selector'
 import { ClosingBalanceTable } from '@/components/features/reports/closing-balance-table'
 import { getDailyClosingBalance, getActiveItemsForReports } from '@/app/actions/reports'
@@ -86,6 +87,14 @@ export default function ClosingBalanceReportPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Reports', href: '/reports' },
+          { label: 'Daily Closing Balance' },
+        ]}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

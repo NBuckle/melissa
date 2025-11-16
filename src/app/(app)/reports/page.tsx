@@ -84,7 +84,42 @@ export default async function ReportsPage() {
         <h2 className="text-xl font-bold text-gray-900 mb-4">
           Available Reports
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Inventory Snapshot */}
+          <Link href="/reports/snapshot">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <svg
+                    className="w-6 h-6 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Inventory Snapshot
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  View complete inventory state for any specific date. See what
+                  was collected, withdrawn, and the closing balance.
+                </p>
+                <div className="mt-4">
+                  <span className="text-sm text-purple-600 font-medium">
+                    View Report →
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
           {/* Daily Closing Balance */}
           <Link href="/reports/closing-balance">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
@@ -109,7 +144,7 @@ export default async function ReportsPage() {
               <CardContent>
                 <p className="text-gray-600">
                   View opening balance, daily collections, withdrawals, and
-                  closing balance for each item by date.
+                  closing balance for each item across a date range.
                 </p>
                 <div className="mt-4">
                   <span className="text-sm text-blue-600 font-medium">

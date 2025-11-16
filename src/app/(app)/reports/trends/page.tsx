@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { DateRangeSelector, type DateRange } from '@/components/features/reports/date-range-selector'
 import { ItemSelector } from '@/components/features/reports/item-selector'
 import { InventoryTrendChart } from '@/components/features/reports/inventory-trend-chart'
@@ -92,6 +93,14 @@ export default function InventoryTrendsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Reports', href: '/reports' },
+          { label: 'Inventory Trends' },
+        ]}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
