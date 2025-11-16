@@ -121,7 +121,7 @@ export async function submitWithdrawal(formData: FormData) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if ((profile as any)?.role !== 'admin') {
     return { success: false, error: 'Unauthorized. Admin access required.' }
   }
 
@@ -157,7 +157,7 @@ export async function submitWithdrawal(formData: FormData) {
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.errors[0].message,
+      error: validation.error.issues[0].message,
     }
   }
 
@@ -176,7 +176,7 @@ export async function submitWithdrawal(formData: FormData) {
 
   // Verify sufficient stock
   for (const item of items) {
-    const inventoryItem = inventoryData.find((inv) => inv.item_id === item.item_id)
+    const inventoryItem = (inventoryData as any).find((inv: any) => inv.item_id === item.item_id)
     if (!inventoryItem) {
       return {
         success: false,
@@ -214,14 +214,14 @@ export async function submitWithdrawal(formData: FormData) {
     .select()
     .single()
 
-  if (withdrawalError) {
+  if (withdrawalError || !withdrawal) {
     console.error('Error creating withdrawal:', withdrawalError)
-    return { success: false, error: withdrawalError.message }
+    return { success: false, error: withdrawalError?.message || 'Failed to create withdrawal' }
   }
 
   // Create withdrawal items
   const withdrawalItems = validation.data.items.map((item) => ({
-    withdrawal_id: withdrawal.id,
+    withdrawal_id: (withdrawal as any).id,
     item_id: item.item_id,
     quantity: item.quantity,
   }))
@@ -233,7 +233,7 @@ export async function submitWithdrawal(formData: FormData) {
   if (itemsError) {
     console.error('Error creating withdrawal items:', itemsError)
     // Rollback: delete the withdrawal
-    await supabase.from('withdrawals').delete().eq('id', withdrawal.id)
+    await supabase.from('withdrawals').delete().eq('id', (withdrawal as any).id)
     return { success: false, error: itemsError.message }
   }
 
@@ -244,7 +244,7 @@ export async function submitWithdrawal(formData: FormData) {
   revalidatePath('/inventory/total')
   revalidatePath('/admin/withdrawals')
 
-  return { success: true, withdrawalId: withdrawal.id }
+  return { success: true, withdrawalId: (withdrawal as any).id }
 }
 
 /**

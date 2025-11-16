@@ -155,7 +155,7 @@ export default function WithdrawalsPage() {
                 {availableParishes.map((parish) => (
                   <Button
                     key={parish}
-                    variant={selectedParish === parish ? 'default' : 'outline'}
+                    variant={selectedParish === parish ? 'primary' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedParish(parish)}
                     className={selectedParish === parish ? 'bg-blue-700 hover:bg-blue-800 text-white font-semibold' : ''}
@@ -183,7 +183,7 @@ export default function WithdrawalsPage() {
                   {Object.keys(deliveriesBySite).sort().map((site) => {
                     const siteData = deliveriesBySite[site]
                     const isExpanded = expandedSites.has(site)
-                    const dates = Array.from(siteData.dates).sort()
+                    const dates = Array.from(siteData.dates as Set<string>).sort()
 
                     return (
                       <Card key={site} className="border-l-4 border-l-blue-500">

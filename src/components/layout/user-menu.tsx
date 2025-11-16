@@ -29,9 +29,9 @@ export function UserMenu({ user, profile }: UserMenuProps) {
     <div className="flex items-center gap-4">
       <div className="text-right">
         <p className="text-sm font-medium text-gray-900">
-          {profile?.full_name || user.email}
+          {(profile as any)?.full_name || user.email}
         </p>
-        <p className="text-xs text-gray-500 capitalize">{profile?.role || 'data_entry'}</p>
+        <p className="text-xs text-gray-500 capitalize">{(profile as any)?.role || 'data_entry'}</p>
       </div>
       <button
         onClick={handleLogout}

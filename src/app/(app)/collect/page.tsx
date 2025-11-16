@@ -30,7 +30,7 @@ export default async function CollectPage() {
           </p>
         </div>
       ) : (
-        <CollectionForm items={items} />
+        <CollectionForm items={items as any} />
       )}
     </div>
   )

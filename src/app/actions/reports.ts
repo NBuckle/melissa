@@ -79,7 +79,7 @@ export async function getDailyClosingBalance(
   }
 
   try {
-    const { data, error } = await supabase.rpc('get_daily_closing_balance', {
+    const { data, error } = await (supabase as any).rpc('get_daily_closing_balance', {
       start_date: startDate,
       end_date: endDate,
       p_item_id: itemId || null,
@@ -128,7 +128,7 @@ export async function getInventoryTrends(
   }
 
   try {
-    const { data, error } = await supabase.rpc('get_inventory_trends', {
+    const { data, error } = await (supabase as any).rpc('get_inventory_trends', {
       start_date: startDate,
       end_date: endDate,
       p_item_ids: itemIds && itemIds.length > 0 ? itemIds : null,
@@ -166,7 +166,7 @@ export async function getCategoryTrends(
   }
 
   try {
-    const { data, error } = await supabase.rpc('get_category_trends', {
+    const { data, error } = await (supabase as any).rpc('get_category_trends', {
       start_date: startDate,
       end_date: endDate,
       p_category_id: categoryId || null,
@@ -212,18 +212,18 @@ export async function getReportsSummary() {
       .from('master_inventory')
       .select('current_stock, total_collected, total_withdrawn')
 
-    const totalStock = inventoryData?.reduce(
-      (sum, item) => sum + (Number(item.current_stock) || 0),
+    const totalStock = (inventoryData as any)?.reduce(
+      (sum: number, item: any) => sum + (Number(item.current_stock) || 0),
       0
     ) || 0
 
-    const totalCollected = inventoryData?.reduce(
-      (sum, item) => sum + (Number(item.total_collected) || 0),
+    const totalCollected = (inventoryData as any)?.reduce(
+      (sum: number, item: any) => sum + (Number(item.total_collected) || 0),
       0
     ) || 0
 
-    const totalWithdrawn = inventoryData?.reduce(
-      (sum, item) => sum + (Number(item.total_withdrawn) || 0),
+    const totalWithdrawn = (inventoryData as any)?.reduce(
+      (sum: number, item: any) => sum + (Number(item.total_withdrawn) || 0),
       0
     ) || 0
 
@@ -234,7 +234,7 @@ export async function getReportsSummary() {
       .order('submission_date', { ascending: true })
       .limit(1)
 
-    const firstCollectionDate = dateRange?.[0]?.submission_date || null
+    const firstCollectionDate = (dateRange as any)?.[0]?.submission_date || null
 
     return {
       summary: {

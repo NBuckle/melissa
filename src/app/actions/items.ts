@@ -103,7 +103,7 @@ export async function createItem(formData: FormData) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if ((profile as any)?.role !== 'admin') {
     return { success: false, error: 'Unauthorized. Admin access required.' }
   }
 
@@ -120,7 +120,7 @@ export async function createItem(formData: FormData) {
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.errors[0].message,
+      error: validation.error.issues[0].message,
     }
   }
 
@@ -163,7 +163,7 @@ export async function updateItem(id: string, formData: FormData) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if ((profile as any)?.role !== 'admin') {
     return { success: false, error: 'Unauthorized. Admin access required.' }
   }
 
@@ -180,7 +180,7 @@ export async function updateItem(id: string, formData: FormData) {
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.errors[0].message,
+      error: validation.error.issues[0].message,
     }
   }
 
@@ -224,7 +224,7 @@ export async function toggleItemStatus(id: string, isActive: boolean) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if ((profile as any)?.role !== 'admin') {
     return { success: false, error: 'Unauthorized. Admin access required.' }
   }
 

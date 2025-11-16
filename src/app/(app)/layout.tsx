@@ -39,7 +39,7 @@ export default async function AppLayout({
       <ToastProvider />
       <Header user={user} profile={profile} />
       <div className="flex">
-        <Navigation role={profile?.role || 'data_entry'} />
+        <Navigation role={(profile as any)?.role || 'data_entry'} />
         <main className="flex-1 p-8">{children}</main>
       </div>
     </div>

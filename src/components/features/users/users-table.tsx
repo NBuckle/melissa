@@ -110,7 +110,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {isCurrentUser ? (
                       <Badge
-                        variant={user.role === 'admin' ? 'default' : 'secondary'}
+                        variant={user.role === 'admin' ? 'default' : 'info'}
                       >
                         {user.role === 'admin' ? 'Admin' : 'Data Entry'}
                       </Badge>

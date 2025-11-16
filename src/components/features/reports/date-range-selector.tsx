@@ -109,7 +109,7 @@ export function DateRangeSelector({
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
-            variant={preset === '7days' ? 'default' : 'outline'}
+            variant={preset === '7days' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => handlePresetChange('7days')}
           >
@@ -117,7 +117,7 @@ export function DateRangeSelector({
           </Button>
           <Button
             type="button"
-            variant={preset === '30days' ? 'default' : 'outline'}
+            variant={preset === '30days' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => handlePresetChange('30days')}
           >
@@ -125,7 +125,7 @@ export function DateRangeSelector({
           </Button>
           <Button
             type="button"
-            variant={preset === '90days' ? 'default' : 'outline'}
+            variant={preset === '90days' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => handlePresetChange('90days')}
           >
@@ -133,7 +133,7 @@ export function DateRangeSelector({
           </Button>
           <Button
             type="button"
-            variant={preset === 'ytd' ? 'default' : 'outline'}
+            variant={preset === 'ytd' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => handlePresetChange('ytd')}
           >
@@ -141,7 +141,7 @@ export function DateRangeSelector({
           </Button>
           <Button
             type="button"
-            variant={preset === 'custom' ? 'default' : 'outline'}
+            variant={preset === 'custom' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => setPreset('custom')}
           >

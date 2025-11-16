@@ -53,7 +53,7 @@ export async function submitCollection(formData: FormData) {
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.errors[0].message,
+      error: validation.error.issues[0].message,
     }
   }
 
@@ -75,14 +75,14 @@ export async function submitCollection(formData: FormData) {
     .select()
     .single()
 
-  if (collectionError) {
+  if (collectionError || !collection) {
     console.error('Error creating collection:', collectionError)
-    return { success: false, error: collectionError.message }
+    return { success: false, error: collectionError?.message || 'Failed to create collection' }
   }
 
   // Create collection items
   const collectionItems = validation.data.items.map((item) => ({
-    collection_id: collection.id,
+    collection_id: (collection as any).id,
     item_id: item.item_id,
     quantity: item.quantity,
   }))
@@ -94,7 +94,7 @@ export async function submitCollection(formData: FormData) {
   if (itemsError) {
     console.error('Error creating collection items:', itemsError)
     // Rollback: delete the collection
-    await supabase.from('collections').delete().eq('id', collection.id)
+    await supabase.from('collections').delete().eq('id', (collection as any).id)
     return { success: false, error: itemsError.message }
   }
 
@@ -105,7 +105,7 @@ export async function submitCollection(formData: FormData) {
   revalidatePath('/inventory/total')
   revalidatePath('/inventory/daily')
 
-  return { success: true, collectionId: collection.id }
+  return { success: true, collectionId: (collection as any).id }
 }
 
 /**

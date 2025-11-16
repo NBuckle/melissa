@@ -36,7 +36,7 @@ async function isAdmin() {
     .eq('id', user.id)
     .single()
 
-  return profile?.role === 'admin'
+  return (profile as any)?.role === 'admin'
 }
 
 /**
@@ -72,18 +72,18 @@ export async function getAllUsers() {
     .select('withdrawn_by')
 
   // Aggregate counts
-  const collectionsByUser = collectionCounts?.reduce((acc: any, c) => {
+  const collectionsByUser = (collectionCounts as any)?.reduce((acc: any, c: any) => {
     acc[c.submitted_by] = (acc[c.submitted_by] || 0) + 1
     return acc
   }, {})
 
-  const withdrawalsByUser = withdrawalCounts?.reduce((acc: any, w) => {
+  const withdrawalsByUser = (withdrawalCounts as any)?.reduce((acc: any, w: any) => {
     acc[w.withdrawn_by] = (acc[w.withdrawn_by] || 0) + 1
     return acc
   }, {})
 
   // Combine data
-  const users = profiles.map((profile) => ({
+  const users = (profiles as any).map((profile: any) => ({
     ...profile,
     collections_count: collectionsByUser?.[profile.id] || 0,
     withdrawals_count: withdrawalsByUser?.[profile.id] || 0,
@@ -160,7 +160,7 @@ export async function inviteUser(formData: FormData) {
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.errors[0].message,
+      error: validation.error.issues[0].message,
     }
   }
 
@@ -182,7 +182,7 @@ export async function inviteUser(formData: FormData) {
   // For now, we'll create a placeholder profile
   // The user will need to use magic link to create their auth account
 
-  const { error: insertError } = await supabase.from('profiles').insert([
+  const { error: insertError } = await (supabase.from('profiles') as any).insert([
     {
       email: email.toLowerCase(),
       role: validation.data.role,
@@ -255,7 +255,7 @@ export async function getUserActivity(userId: string, days: number = 30) {
   const totalWithdrawals = withdrawals?.length || 0
 
   const totalItemsCollected =
-    collections?.reduce((sum, c) => {
+    (collections as any)?.reduce((sum: number, c: any) => {
       const itemsTotal = c.collection_items.reduce(
         (s: number, i: any) => s + Number(i.quantity),
         0
@@ -264,7 +264,7 @@ export async function getUserActivity(userId: string, days: number = 30) {
     }, 0) || 0
 
   const totalItemsWithdrawn =
-    withdrawals?.reduce((sum, w) => {
+    (withdrawals as any)?.reduce((sum: number, w: any) => {
       const itemsTotal = w.withdrawal_items.reduce(
         (s: number, i: any) => s + Number(i.quantity),
         0

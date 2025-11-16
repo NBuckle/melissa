@@ -67,8 +67,8 @@ export async function getLowStockItems() {
   }
 
   // Filter items where current_stock <= low_stock_threshold
-  const lowStockItems = data?.filter(
-    item => item.current_stock <= item.low_stock_threshold
+  const lowStockItems = (data as any)?.filter(
+    (item: any) => item.current_stock <= item.low_stock_threshold
   ) || []
 
   return { items: lowStockItems, error: null }
@@ -98,24 +98,24 @@ export async function getInventoryStats() {
     .from('master_inventory')
     .select('current_stock, total_collected, total_withdrawn')
 
-  const totalStock = inventoryData?.reduce(
-    (sum, item) => sum + (item.current_stock || 0),
+  const totalStock = (inventoryData as any)?.reduce(
+    (sum: number, item: any) => sum + (item.current_stock || 0),
     0
   ) || 0
 
-  const totalCollected = inventoryData?.reduce(
-    (sum, item) => sum + (item.total_collected || 0),
+  const totalCollected = (inventoryData as any)?.reduce(
+    (sum: number, item: any) => sum + (item.total_collected || 0),
     0
   ) || 0
 
-  const totalWithdrawn = inventoryData?.reduce(
-    (sum, item) => sum + (item.total_withdrawn || 0),
+  const totalWithdrawn = (inventoryData as any)?.reduce(
+    (sum: number, item: any) => sum + (item.total_withdrawn || 0),
     0
   ) || 0
 
   // Get low stock count (filter in JavaScript due to column comparison limitation)
-  const lowStockCount = inventoryData?.filter(
-    item => item.is_active && item.current_stock <= item.low_stock_threshold
+  const lowStockCount = (inventoryData as any)?.filter(
+    (item: any) => item.is_active && item.current_stock <= item.low_stock_threshold
   ).length || 0
 
   return {
@@ -191,7 +191,7 @@ export async function getInventorySnapshot(date: string) {
 
   try {
     // Use existing get_daily_closing_balance function with single date
-    const { data, error } = await supabase.rpc('get_daily_closing_balance', {
+    const { data, error } = await (supabase as any).rpc('get_daily_closing_balance', {
       start_date: date,
       end_date: date,
       p_item_id: null,
@@ -252,7 +252,7 @@ export async function getEarliestDataDate() {
     return { date: '2025-11-01', error: null }
   }
 
-  return { date: data[0].submission_date, error: null }
+  return { date: (data as any)[0].submission_date, error: null }
 }
 
 /**

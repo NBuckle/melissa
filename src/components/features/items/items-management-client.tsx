@@ -115,7 +115,7 @@ export function ItemsManagementClient({
               {/* Category Tabs - Left */}
               <div className="flex gap-2 flex-wrap">
                 <Button
-                  variant={filterCategory === 'all' ? 'default' : 'outline'}
+                  variant={filterCategory === 'all' ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => setFilterCategory('all')}
                   className={filterCategory === 'all' ? 'bg-blue-700 hover:bg-blue-800 text-white font-semibold' : ''}
@@ -125,7 +125,7 @@ export function ItemsManagementClient({
                 {['Baby', 'Bathroom', 'First Aid', 'Pantry', 'Other'].map((category) => (
                   <Button
                     key={category}
-                    variant={filterCategory === category ? 'default' : 'outline'}
+                    variant={filterCategory === category ? 'primary' : 'outline'}
                     size="sm"
                     onClick={() => setFilterCategory(category)}
                     className={filterCategory === category ? 'bg-blue-700 hover:bg-blue-800 text-white font-semibold' : ''}
