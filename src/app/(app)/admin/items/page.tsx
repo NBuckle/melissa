@@ -30,8 +30,8 @@ export default async function ItemsManagementPage() {
         </div>
       ) : (
         <ItemsManagementClient
-          items={itemsResult.items}
-          categories={categoriesResult.categories}
+          items={itemsResult.items as any}
+          categories={categoriesResult.categories as any}
         />
       )}
     </div>
