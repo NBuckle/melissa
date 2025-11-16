@@ -114,14 +114,14 @@ export default function WithdrawalsPage() {
         </div>
         <div className="flex gap-2">
           <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
+            variant={viewMode === 'list' ? 'primary' : 'outline'}
             onClick={() => setViewMode('list')}
             className={viewMode === 'list' ? 'bg-blue-700 hover:bg-blue-800 text-white' : ''}
           >
             List View
           </Button>
           <Button
-            variant={viewMode === 'table' ? 'default' : 'outline'}
+            variant={viewMode === 'table' ? 'primary' : 'outline'}
             onClick={() => setViewMode('table')}
             className={viewMode === 'table' ? 'bg-blue-700 hover:bg-blue-800 text-white' : ''}
           >
