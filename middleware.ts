@@ -31,13 +31,13 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin')) {
     const supabase = await createClient()
 
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user!.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (error || !profile || (profile as any)?.role !== 'admin') {
       // Not an admin - redirect to dashboard
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
