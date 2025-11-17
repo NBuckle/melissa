@@ -195,17 +195,17 @@ export async function submitWithdrawal(formData: FormData) {
   const now = new Date()
   const withdrawalDate = now.toISOString().split('T')[0]
 
-  // Create withdrawal record
-  const { data: withdrawal, error: withdrawalError } = await supabase
-    .from('withdrawals')
+  // Create distribution record (renamed from withdrawal)
+  const { data: distribution, error: distributionError } = await supabase
+    .from('distributions')
     .insert([
       {
         distribution_type_id: distributionTypeId,
         kit_template_id: kitTemplateId || null,
         kits_created: kitsCreated || null,
-        withdrawn_by: user.id,
-        withdrawal_date: withdrawalDate,
-        withdrawal_timestamp: now.toISOString(),
+        distributed_by: user.id,
+        distribution_date: withdrawalDate,
+        distribution_timestamp: now.toISOString(),
         recipient,
         reason,
         notes,
@@ -214,26 +214,26 @@ export async function submitWithdrawal(formData: FormData) {
     .select()
     .single()
 
-  if (withdrawalError || !withdrawal) {
-    console.error('Error creating withdrawal:', withdrawalError)
-    return { success: false, error: withdrawalError?.message || 'Failed to create withdrawal' }
+  if (distributionError || !distribution) {
+    console.error('Error creating distribution:', distributionError)
+    return { success: false, error: distributionError?.message || 'Failed to create distribution' }
   }
 
-  // Create withdrawal items
-  const withdrawalItems = validation.data.items.map((item) => ({
-    withdrawal_id: (withdrawal as any).id,
+  // Create distribution items
+  const distributionItems = validation.data.items.map((item) => ({
+    distribution_id: (distribution as any).id,
     item_id: item.item_id,
     quantity: item.quantity,
   }))
 
   const { error: itemsError } = await supabase
-    .from('withdrawal_items')
-    .insert(withdrawalItems)
+    .from('distribution_items')
+    .insert(distributionItems)
 
   if (itemsError) {
-    console.error('Error creating withdrawal items:', itemsError)
-    // Rollback: delete the withdrawal
-    await supabase.from('withdrawals').delete().eq('id', (withdrawal as any).id)
+    console.error('Error creating distribution items:', itemsError)
+    // Rollback: delete the distribution
+    await supabase.from('distributions').delete().eq('id', (distribution as any).id)
     return { success: false, error: itemsError.message }
   }
 
@@ -242,36 +242,36 @@ export async function submitWithdrawal(formData: FormData) {
 
   revalidatePath('/dashboard')
   revalidatePath('/inventory/total')
-  revalidatePath('/admin/withdrawals')
+  revalidatePath('/admin/distributions')
 
-  return { success: true, withdrawalId: (withdrawal as any).id }
+  return { success: true, distributionId: (distribution as any).id }
 }
 
 /**
- * Get recent withdrawals with details
+ * Get recent distributions with details
  */
 export async function getRecentWithdrawals(limit: number = 10) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('withdrawals')
+    .from('distributions')
     .select(
       `
       *,
       profile:profiles(full_name, email),
       distribution_type:distribution_types(name, requires_recipient),
       kit_template:kit_templates(name, description),
-      withdrawal_items(
+      distribution_items(
         quantity,
         item:items(name, unit_type)
       )
     `
     )
-    .order('withdrawal_timestamp', { ascending: false })
+    .order('distribution_timestamp', { ascending: false })
     .limit(limit)
 
   if (error) {
-    console.error('Error fetching recent withdrawals:', error)
+    console.error('Error fetching recent distributions:', error)
     return { withdrawals: [], error: error.message }
   }
 
@@ -279,7 +279,7 @@ export async function getRecentWithdrawals(limit: number = 10) {
 }
 
 /**
- * Get withdrawals within a date range
+ * Get distributions within a date range
  */
 export async function getWithdrawalsByDateRange(
   startDate: string,
@@ -287,26 +287,26 @@ export async function getWithdrawalsByDateRange(
 ) {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from('withdrawals')
+  const { data, error} = await supabase
+    .from('distributions')
     .select(
       `
       *,
       profile:profiles(full_name, email),
       distribution_type:distribution_types(name, requires_recipient),
       kit_template:kit_templates(name, description),
-      withdrawal_items(
+      distribution_items(
         quantity,
         item:items(name, unit_type, category:item_categories(name))
       )
     `
     )
-    .gte('withdrawal_date', startDate)
-    .lte('withdrawal_date', endDate)
-    .order('withdrawal_timestamp', { ascending: false })
+    .gte('distribution_date', startDate)
+    .lte('distribution_date', endDate)
+    .order('distribution_timestamp', { ascending: false })
 
   if (error) {
-    console.error('Error fetching withdrawals by date range:', error)
+    console.error('Error fetching distributions by date range:', error)
     return { withdrawals: [], error: error.message }
   }
 

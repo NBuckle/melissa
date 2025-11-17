@@ -46,10 +46,16 @@ export async function getDailyInventory(date?: string) {
   }
 
   // Get withdrawals for this specific date, grouped by item
-  const { data: dailyWithdrawalsData } = await supabase
+  const { data: dailyWithdrawalsData, error: withdrawalsError } = await supabase
     .from('actual_withdrawal_items')
     .select('item_id, quantity, withdrawal:actual_withdrawals!inner(withdrawal_date)')
     .eq('withdrawal.withdrawal_date', targetDate)
+
+  if (withdrawalsError) {
+    console.error('Error fetching daily withdrawals:', withdrawalsError)
+  }
+
+  console.log(`[DEBUG] Daily withdrawals for ${targetDate}:`, dailyWithdrawalsData?.length || 0, 'items')
 
   // Create a map of item_id -> total withdrawn quantity for this date
   const withdrawalsByItem = (dailyWithdrawalsData as any)?.reduce((acc: any, item: any) => {
@@ -59,6 +65,8 @@ export async function getDailyInventory(date?: string) {
     acc[item.item_id] += parseFloat(item.quantity) || 0
     return acc
   }, {}) || {}
+
+  console.log('[DEBUG] Withdrawals by item:', Object.keys(withdrawalsByItem).length, 'items')
 
   // Add withdrawal quantities to inventory items
   const inventoryWithWithdrawals = (data as any)?.map((item: any) => ({

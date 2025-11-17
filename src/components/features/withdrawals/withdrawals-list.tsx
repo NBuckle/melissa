@@ -1,14 +1,13 @@
 /**
- * Distributions List Component
+ * Withdrawals List Component
  *
- * Displays a list of recent distributions with expandable details.
+ * Displays a list of recent actual withdrawals with expandable details.
  */
 
 'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 
 interface WithdrawalItemData {
@@ -21,32 +20,23 @@ interface WithdrawalItemData {
 
 interface Withdrawal {
   id: string
-  distribution_date: string
-  distribution_timestamp: string
+  withdrawal_date: string
+  withdrawal_timestamp: string
   recipient: string | null
   reason: string | null
   notes: string | null
-  kits_created: number | null
   profile: {
     full_name: string | null
     email: string
   }
-  distribution_type: {
-    name: string
-    requires_recipient: boolean
-  }
-  kit_template: {
-    name: string
-    description: string | null
-  } | null
-  distribution_items: WithdrawalItemData[]
+  actual_withdrawal_items: WithdrawalItemData[]
 }
 
-interface DistributionsListProps {
+interface WithdrawalsListProps {
   withdrawals: Withdrawal[]
 }
 
-export function DistributionsList({ withdrawals }: DistributionsListProps) {
+export function WithdrawalsList({ withdrawals }: WithdrawalsListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   if (withdrawals.length === 0) {
@@ -54,7 +44,7 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
       <Card>
         <CardContent className="py-12">
           <p className="text-center text-gray-500">
-            No distributions recorded yet.
+            No withdrawals recorded yet.
           </p>
         </CardContent>
       </Card>
@@ -66,7 +56,7 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
   }
 
   const getTotalQuantity = (withdrawal: Withdrawal) => {
-    return withdrawal.distribution_items.reduce(
+    return withdrawal.actual_withdrawal_items.reduce(
       (sum, item) => sum + item.quantity,
       0
     )
@@ -75,7 +65,7 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Distributions</CardTitle>
+        <CardTitle>Recent Withdrawals</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -98,16 +88,10 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
                       <p className="text-sm text-gray-600">Date</p>
                       <p className="font-medium">
                         {format(
-                          new Date(withdrawal.distribution_date),
+                          new Date(withdrawal.withdrawal_date),
                           'MMM d, yyyy'
                         )}
                       </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Type</p>
-                      <Badge variant="default">
-                        {withdrawal.distribution_type.name}
-                      </Badge>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Recipient</p>
@@ -116,9 +100,15 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
                       </p>
                     </div>
                     <div>
+                      <p className="text-sm text-gray-600">Reason</p>
+                      <p className="font-medium">
+                        {withdrawal.reason || '-'}
+                      </p>
+                    </div>
+                    <div>
                       <p className="text-sm text-gray-600">Items / Qty</p>
                       <p className="font-medium">
-                        {withdrawal.distribution_items.length} items / {totalQty.toFixed(0)}
+                        {withdrawal.actual_withdrawal_items.length} items / {totalQty.toFixed(0)}
                       </p>
                     </div>
                     <div>
@@ -150,27 +140,10 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
                 {/* Expanded Details */}
                 {isExpanded && (
                   <div className="border-t border-gray-200 bg-gray-50 p-4 space-y-4">
-                    {/* Kit Info */}
-                    {withdrawal.kit_template && (
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">
-                          Kit Template
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {withdrawal.kit_template.name}
-                          {withdrawal.kits_created && (
-                            <span className="ml-2">
-                              ({withdrawal.kits_created} kits created)
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
                     {/* Items Table */}
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-2">
-                        Items Distributed
+                        Items Withdrawn
                       </p>
                       <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
@@ -188,7 +161,7 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {withdrawal.distribution_items.map((item, idx) => (
+                            {withdrawal.actual_withdrawal_items.map((item, idx) => (
                               <tr key={idx}>
                                 <td className="px-4 py-2 text-sm text-gray-900">
                                   {item.item.name}
@@ -206,38 +179,24 @@ export function DistributionsList({ withdrawals }: DistributionsListProps) {
                       </div>
                     </div>
 
-                    {/* Reason & Notes */}
-                    {(withdrawal.reason || withdrawal.notes) && (
-                      <div className="space-y-2">
-                        {withdrawal.reason && (
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">
-                              Reason
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              {withdrawal.reason}
-                            </p>
-                          </div>
-                        )}
-                        {withdrawal.notes && (
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">
-                              Notes
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              {withdrawal.notes}
-                            </p>
-                          </div>
-                        )}
+                    {/* Notes */}
+                    {withdrawal.notes && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          Notes
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {withdrawal.notes}
+                        </p>
                       </div>
                     )}
 
                     {/* Timestamp */}
                     <div>
                       <p className="text-xs text-gray-500">
-                        Submitted at{' '}
+                        Recorded at{' '}
                         {format(
-                          new Date(withdrawal.distribution_timestamp),
+                          new Date(withdrawal.withdrawal_timestamp),
                           'MMM d, yyyy h:mm a'
                         )}
                       </p>

@@ -49,6 +49,12 @@ export function Navigation({ role }: NavigationProps) {
       roles: ['admin'],
     },
     {
+      label: 'Withdrawals',
+      href: '/admin/withdrawals',
+      icon: '📉',
+      roles: ['admin'],
+    },
+    {
       label: 'Items Management',
       href: '/admin/items',
       icon: '🏷️',
