@@ -43,8 +43,8 @@ export function Navigation({ role }: NavigationProps) {
       roles: ['admin', 'data_entry'],
     },
     {
-      label: 'Withdrawals',
-      href: '/admin/withdrawals',
+      label: 'Distributions',
+      href: '/admin/distributions',
       icon: '📤',
       roles: ['admin'],
     },

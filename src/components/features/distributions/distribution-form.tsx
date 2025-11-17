@@ -1,7 +1,7 @@
 /**
- * Withdrawal Form Component
+ * Distribution Form Component
  *
- * Form for creating new withdrawals/distributions.
+ * Form for creating new distributions (CBAJ tracking and record-keeping).
  * Supports kit templates for quick entry and manual item selection.
  */
 
@@ -52,17 +52,17 @@ interface WithdrawalItem {
   quantity: number
 }
 
-interface WithdrawalFormProps {
+interface DistributionFormProps {
   distributionTypes: DistributionType[]
   kitTemplates: KitTemplate[]
   items: Item[]
 }
 
-export function WithdrawalForm({
+export function DistributionForm({
   distributionTypes,
   kitTemplates,
   items,
-}: WithdrawalFormProps) {
+}: DistributionFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -184,11 +184,11 @@ export function WithdrawalForm({
       const result = await submitWithdrawal(formData)
 
       if (result.success) {
-        toast.success('Withdrawal submitted successfully!')
-        router.push('/admin/withdrawals/success')
+        toast.success('Distribution submitted successfully!')
+        router.push('/admin/distributions/success')
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to submit withdrawal')
+        toast.error(result.error || 'Failed to submit distribution')
       }
     } catch (error) {
       console.error('Submission error:', error)
@@ -201,7 +201,7 @@ export function WithdrawalForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create New Withdrawal</CardTitle>
+        <CardTitle>Create New Distribution</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -367,12 +367,12 @@ export function WithdrawalForm({
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push('/admin/withdrawals')}
+              onClick={() => router.push('/admin/distributions')}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit Withdrawal'}
+              {loading ? 'Submitting...' : 'Submit Distribution'}
             </Button>
           </div>
         </form>

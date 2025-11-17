@@ -40,6 +40,7 @@ export async function submitCollection(formData: FormData) {
   // Parse items from form data
   const itemsJson = formData.get('items') as string
   const notes = (formData.get('notes') as string) || null
+  const receiptDate = (formData.get('receipt_date') as string) || null
 
   let items
   try {
@@ -57,7 +58,7 @@ export async function submitCollection(formData: FormData) {
     }
   }
 
-  // Get today's date
+  // Get today's date for submission timestamp
   const now = new Date()
   const submissionDate = now.toISOString().split('T')[0]
 
@@ -69,6 +70,7 @@ export async function submitCollection(formData: FormData) {
         submitted_by: user.id,
         submission_date: submissionDate,
         submission_timestamp: now.toISOString(),
+        receipt_date: receiptDate || submissionDate, // Use receipt_date if provided, otherwise use submission_date
         notes,
       },
     ])

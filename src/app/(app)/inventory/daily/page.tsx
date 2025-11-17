@@ -16,7 +16,7 @@ export default async function DailyInventoryPage({
 }) {
   const params = await searchParams
   const selectedDate = params.date || new Date().toISOString().split('T')[0]
-  const { inventory, error } = await getDailyInventory(selectedDate)
+  const { inventory, summary, error } = await getDailyInventory(selectedDate)
 
   // Group inventory by category
   const inventoryByCategory = inventory.reduce((acc: any, item: any) => {
@@ -30,8 +30,6 @@ export default async function DailyInventoryPage({
 
   const categoryOrder = ['Baby', 'Bathroom', 'First Aid', 'Pantry', 'Other']
   const sortedCategories = categoryOrder.filter(cat => inventoryByCategory[cat])
-
-  const totalCollected = inventory.reduce((sum: number, item: any) => sum + (item.daily_collected || 0), 0)
 
   return (
     <div className="space-y-8">
@@ -80,21 +78,33 @@ export default async function DailyInventoryPage({
         <>
           <Card>
             <CardHeader>
-              <CardTitle>Daily Summary</CardTitle>
+              <CardTitle>Summary Metrics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <p className="text-sm text-gray-600">Total Items Collected</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalCollected.toLocaleString()}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Total Collected (Up to Date)</p>
+                  <p className="text-3xl font-bold text-blue-700">
+                    {summary?.cumulativeCollected?.toLocaleString() || 0}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Unique Items</p>
-                  <p className="text-3xl font-bold text-gray-900">{inventory.length}</p>
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Total Withdrawn (Up to Date)</p>
+                  <p className="text-3xl font-bold text-red-700">
+                    {summary?.cumulativeWithdrawn?.toLocaleString() || 0}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Categories</p>
-                  <p className="text-3xl font-bold text-gray-900">{sortedCategories.length}</p>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Collected on This Date</p>
+                  <p className="text-3xl font-bold text-green-700">
+                    {summary?.dailyCollected?.toLocaleString() || 0}
+                  </p>
+                </div>
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Withdrawn on This Date</p>
+                  <p className="text-3xl font-bold text-orange-700">
+                    {summary?.dailyWithdrawn?.toLocaleString() || 0}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -124,6 +134,9 @@ export default async function DailyInventoryPage({
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Quantity Collected
                         </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Quantity Distributed
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -141,6 +154,15 @@ export default async function DailyInventoryPage({
                             <span className="font-semibold text-green-700">
                               {item.daily_collected.toLocaleString()}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                            {item.daily_withdrawn > 0 ? (
+                              <span className="font-semibold text-orange-700">
+                                {item.daily_withdrawn.toLocaleString()}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
                           </td>
                         </tr>
                       ))}

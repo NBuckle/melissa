@@ -40,9 +40,35 @@ export async function getItems() {
 }
 
 /**
- * Get active items only
+ * Get active items only (excludes CBAJ-only items)
+ * Use this for collection forms and inventory tracking
  */
 export async function getActiveItems() {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('items')
+    .select(`
+      *,
+      category:item_categories(id, name, order_index)
+    `)
+    .eq('is_active', true)
+    .eq('is_cbaj_only', false)  // Exclude CBAJ-only items from collection forms
+    .order('name')
+
+  if (error) {
+    console.error('Error fetching active items:', error)
+    return { items: [], error: error.message }
+  }
+
+  return { items: data, error: null }
+}
+
+/**
+ * Get ALL active items (includes CBAJ-only items)
+ * Use this for distributions/withdrawals where CBAJ items should be available
+ */
+export async function getAllActiveItems() {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -55,7 +81,7 @@ export async function getActiveItems() {
     .order('name')
 
   if (error) {
-    console.error('Error fetching active items:', error)
+    console.error('Error fetching all active items:', error)
     return { items: [], error: error.message }
   }
 

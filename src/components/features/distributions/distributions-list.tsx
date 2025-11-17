@@ -1,7 +1,7 @@
 /**
- * Withdrawals List Component
+ * Distributions List Component
  *
- * Displays a list of recent withdrawals with expandable details.
+ * Displays a list of recent distributions with expandable details.
  */
 
 'use client'
@@ -42,11 +42,11 @@ interface Withdrawal {
   withdrawal_items: WithdrawalItemData[]
 }
 
-interface WithdrawalsListProps {
+interface DistributionsListProps {
   withdrawals: Withdrawal[]
 }
 
-export function WithdrawalsList({ withdrawals }: WithdrawalsListProps) {
+export function DistributionsList({ withdrawals }: DistributionsListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   if (withdrawals.length === 0) {
@@ -54,7 +54,7 @@ export function WithdrawalsList({ withdrawals }: WithdrawalsListProps) {
       <Card>
         <CardContent className="py-12">
           <p className="text-center text-gray-500">
-            No withdrawals recorded yet.
+            No distributions recorded yet.
           </p>
         </CardContent>
       </Card>
@@ -75,7 +75,7 @@ export function WithdrawalsList({ withdrawals }: WithdrawalsListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Withdrawals</CardTitle>
+        <CardTitle>Recent Distributions</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -170,7 +170,7 @@ export function WithdrawalsList({ withdrawals }: WithdrawalsListProps) {
                     {/* Items Table */}
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-2">
-                        Items Withdrawn
+                        Items Distributed
                       </p>
                       <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">

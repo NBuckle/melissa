@@ -1,45 +1,42 @@
 #!/usr/bin/env node
-/**
- * Run Migration Script
- *
- * Simple script to provide instructions for running the Phase 5 migration.
- * The Supabase JS SDK doesn't support raw SQL execution, so this must be done
- * via the Supabase dashboard.
- */
 
-import { readFileSync } from 'fs'
+import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import fs from 'fs'
+import postgres from 'postgres'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-console.log('\n' + '='.repeat(70))
-console.log('📊 MELISSA INVENTORY - PHASE 5 REPORTING MIGRATION')
-console.log('='.repeat(70))
+dotenv.config({ path: join(__dirname, '../.env.local') })
 
-const migrationPath = join(__dirname, '..', 'supabase', 'migrations', '005_reporting_functions.sql')
+const DATABASE_URL = process.env.DATABASE_URL
 
-console.log(`\n📄 Migration file: ${migrationPath}`)
-
-try {
-  const sql = readFileSync(migrationPath, 'utf8')
-  console.log(`📝 Migration size: ${sql.length} characters`)
-
-  console.log('\n' + '='.repeat(70))
-  console.log('TO APPLY THIS MIGRATION:')
-  console.log('='.repeat(70))
-  console.log('\n1. Go to: https://supabase.com/dashboard/project/karwhqspyarzebiwpnrh/sql/new')
-  console.log('\n2. Copy the contents of: supabase/migrations/005_reporting_functions.sql')
-  console.log('\n3. Paste into the SQL Editor and click "Run"')
-  console.log('\n4. Verify success - you should see "Success. No rows returned"')
-  console.log('\n' + '='.repeat(70))
-  console.log('\nOr, copy the SQL below and execute it:\n')
-  console.log('='.repeat(70))
-  console.log(sql)
-  console.log('='.repeat(70))
-
-} catch (err) {
-  console.error('❌ Error reading migration file:', err.message)
+if (!DATABASE_URL) {
+  console.error('❌ DATABASE_URL not found in .env.local')
   process.exit(1)
 }
+
+async function runMigration() {
+  console.log('🚀 Running Migration 008...\n')
+  const sql = postgres(DATABASE_URL)
+
+  try {
+    const migrationPath = join(__dirname, '../supabase/migrations/008_restructure_withdrawals.sql')
+    const migrationSQL = fs.readFileSync(migrationPath, 'utf8')
+    
+    console.log('📄 Executing migration...\n')
+    await sql.unsafe(migrationSQL)
+    
+    console.log('✅ Migration completed!\n')
+    await sql.end()
+    process.exit(0)
+  } catch (error) {
+    console.error('❌ Error:', error.message)
+    await sql.end()
+    process.exit(1)
+  }
+}
+
+runMigration()

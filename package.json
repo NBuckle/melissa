@@ -35,8 +35,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
+    "postgres": "^3.4.7",
     "supabase": "^2.54.11",
     "tailwindcss": "^4",
     "typescript": "^5"

@@ -27,12 +27,13 @@ export async function getMasterInventory() {
 }
 
 /**
- * Get daily inventory for a specific date
+ * Get daily inventory for a specific date with summary metrics
  */
 export async function getDailyInventory(date?: string) {
   const supabase = await createClient()
   const targetDate = date || new Date().toISOString().split('T')[0]
 
+  // Get daily inventory items for the specific date
   const { data, error } = await supabase
     .from('daily_inventory')
     .select('*')
@@ -41,10 +42,70 @@ export async function getDailyInventory(date?: string) {
 
   if (error) {
     console.error('Error fetching daily inventory:', error)
-    return { inventory: [], error: error.message }
+    return { inventory: [], error: error.message, summary: null }
   }
 
-  return { inventory: data, error: null }
+  // Get withdrawals for this specific date, grouped by item
+  const { data: dailyWithdrawalsData } = await supabase
+    .from('actual_withdrawal_items')
+    .select('item_id, quantity, withdrawal:actual_withdrawals!inner(withdrawal_date)')
+    .eq('withdrawal.withdrawal_date', targetDate)
+
+  // Create a map of item_id -> total withdrawn quantity for this date
+  const withdrawalsByItem = (dailyWithdrawalsData as any)?.reduce((acc: any, item: any) => {
+    if (!acc[item.item_id]) {
+      acc[item.item_id] = 0
+    }
+    acc[item.item_id] += parseFloat(item.quantity) || 0
+    return acc
+  }, {}) || {}
+
+  // Add withdrawal quantities to inventory items
+  const inventoryWithWithdrawals = (data as any)?.map((item: any) => ({
+    ...item,
+    daily_withdrawn: withdrawalsByItem[item.item_id] || 0
+  })) || []
+
+  // Calculate summary metrics
+  // 1. Total collected on that date (daily)
+  const dailyCollected = (data as any)?.reduce((sum: number, item: any) =>
+    sum + (parseFloat(item.daily_collected) || 0), 0) || 0
+
+  // 2. Cumulative collected up to that date (all collections where receipt_date <= targetDate)
+  const { data: cumulativeCollectedData } = await supabase
+    .from('collection_items')
+    .select('quantity, collection:collections!inner(receipt_date)')
+    .lte('collection.receipt_date', targetDate)
+
+  const cumulativeCollected = (cumulativeCollectedData as any)?.reduce((sum: number, item: any) =>
+    sum + (parseFloat(item.quantity) || 0), 0) || 0
+
+  // 3. Cumulative withdrawn up to that date (all actual_withdrawals where withdrawal_date <= targetDate)
+  const { data: cumulativeWithdrawnData } = await supabase
+    .from('actual_withdrawal_items')
+    .select('quantity, withdrawal:actual_withdrawals!inner(withdrawal_date)')
+    .lte('withdrawal.withdrawal_date', targetDate)
+
+  const cumulativeWithdrawn = (cumulativeWithdrawnData as any)?.reduce((sum: number, item: any) =>
+    sum + (parseFloat(item.quantity) || 0), 0) || 0
+
+  // 4. Total withdrawn on that date (daily)
+  const { data: dailyWithdrawnData } = await supabase
+    .from('actual_withdrawal_items')
+    .select('quantity, withdrawal:actual_withdrawals!inner(withdrawal_date)')
+    .eq('withdrawal.withdrawal_date', targetDate)
+
+  const dailyWithdrawn = (dailyWithdrawnData as any)?.reduce((sum: number, item: any) =>
+    sum + (parseFloat(item.quantity) || 0), 0) || 0
+
+  const summary = {
+    cumulativeCollected,
+    cumulativeWithdrawn,
+    dailyCollected,
+    dailyWithdrawn,
+  }
+
+  return { inventory: inventoryWithWithdrawals, summary, error: null }
 }
 
 /**

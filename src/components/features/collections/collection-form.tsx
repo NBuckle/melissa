@@ -46,6 +46,7 @@ export function CollectionForm({ items }: CollectionFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [notes, setNotes] = useState('')
+  const [receiptDate, setReceiptDate] = useState(new Date().toISOString().split('T')[0]) // Today by default
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([
     { item_id: '', quantity: 0 },
   ])
@@ -84,6 +85,7 @@ export function CollectionForm({ items }: CollectionFormProps) {
     const formData = new FormData()
     formData.append('items', JSON.stringify(validItems))
     formData.append('notes', notes)
+    formData.append('receipt_date', receiptDate)
 
     const result = await submitCollection(formData)
 
@@ -189,6 +191,29 @@ export function CollectionForm({ items }: CollectionFormProps) {
           <Button type="button" variant="outline" onClick={addItem}>
             + Add Another Item
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Receipt Date</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Label htmlFor="receipt-date">
+            When were these items received?
+          </Label>
+          <Input
+            id="receipt-date"
+            type="date"
+            value={receiptDate}
+            onChange={(e) => setReceiptDate(e.target.value)}
+            max={new Date().toISOString().split('T')[0]} // Can't be future date
+            required
+            className="max-w-xs"
+          />
+          <p className="text-sm text-gray-500 mt-2">
+            This may differ from today's date if you're recording items received earlier
+          </p>
         </CardContent>
       </Card>
 

@@ -1,8 +1,8 @@
 /**
- * Withdrawals Management Page
+ * Distributions Management Page
  *
- * Admin-only page for creating and viewing withdrawals/distributions.
- * Now includes toggle between List View and CBAJ Table View
+ * Admin-only page for creating and viewing distributions (CBAJ tracking and record-keeping).
+ * Includes toggle between List View and CBAJ Table View
  */
 
 'use client'
@@ -10,20 +10,20 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { WithdrawalForm } from '@/components/features/withdrawals/withdrawal-form'
-import { WithdrawalsList } from '@/components/features/withdrawals/withdrawals-list'
+import { DistributionForm } from '@/components/features/distributions/distribution-form'
+import { DistributionsList } from '@/components/features/distributions/distributions-list'
 import {
   getDistributionTypes,
   getKitTemplates,
   getRecentWithdrawals,
 } from '@/app/actions/withdrawals'
-import { getActiveItems } from '@/app/actions/items'
+import { getAllActiveItems } from '@/app/actions/items'
 import { getCBAJDeliveries } from '@/app/actions/inventory'
 import { format } from 'date-fns'
 
 type ViewMode = 'list' | 'table'
 
-export default function WithdrawalsPage() {
+export default function DistributionsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [distributionTypes, setDistributionTypes] = useState<any[]>([])
   const [kitTemplates, setKitTemplates] = useState<any[]>([])
@@ -43,7 +43,7 @@ export default function WithdrawalsPage() {
     const [typesRes, templatesRes, itemsRes, withdrawalsRes, deliveriesRes] = await Promise.all([
       getDistributionTypes(),
       getKitTemplates(),
-      getActiveItems(),
+      getAllActiveItems(),  // Include CBAJ items for distributions
       getRecentWithdrawals(20),
       getCBAJDeliveries()
     ])
@@ -106,10 +106,10 @@ export default function WithdrawalsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Withdrawals & Distributions
+            Distributions
           </h1>
           <p className="text-gray-600 mt-2">
-            Record distributions, kit creation, and inventory withdrawals
+            Record CBAJ distributions, kit creation, and track deliveries
           </p>
         </div>
         <div className="flex gap-2">
@@ -132,15 +132,15 @@ export default function WithdrawalsPage() {
 
       {viewMode === 'list' ? (
         <>
-          {/* Create New Withdrawal Form */}
-          <WithdrawalForm
+          {/* Create New Distribution Form */}
+          <DistributionForm
             distributionTypes={distributionTypes}
             kitTemplates={kitTemplates}
             items={items}
           />
 
-          {/* Recent Withdrawals List */}
-          <WithdrawalsList withdrawals={withdrawals} />
+          {/* Recent Distributions List */}
+          <DistributionsList withdrawals={withdrawals} />
         </>
       ) : (
         <>
@@ -250,7 +250,7 @@ export default function WithdrawalsPage() {
             <CardContent className="pt-6">
               <p className="text-sm text-blue-900">
                 <strong>Table View:</strong> Shows CBAJ deliveries to churches organized by date.
-                This is a read-only view for reference. To record new withdrawals, switch to List View.
+                This is a read-only view for reference. To record new distributions, switch to List View.
               </p>
             </CardContent>
           </Card>
