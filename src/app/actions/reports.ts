@@ -204,7 +204,7 @@ export async function getReportsSummary() {
 
     // Get total withdrawals count
     const { count: totalWithdrawals } = await supabase
-      .from('withdrawals')
+      .from('actual_withdrawals')
       .select('*', { count: 'exact', head: true })
 
     // Get current total stock

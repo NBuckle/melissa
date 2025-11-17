@@ -41,10 +41,10 @@ export default async function WithdrawalsPage() {
   }
 
   // Get active items (excluding CBAJ-only items)
-  const { items } = await getActiveItems()
+  const { items, error: itemsError } = await getActiveItems()
 
   // Get recent withdrawals
-  const { withdrawals } = await getRecentWithdrawals(10)
+  const { withdrawals, error: withdrawalsError } = await getRecentWithdrawals(10)
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
@@ -56,13 +56,25 @@ export default async function WithdrawalsPage() {
         </p>
       </div>
 
-      <div className="space-y-8">
-        {/* Withdrawal Form */}
-        <WithdrawalForm items={items} />
+      {itemsError ? (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <p className="text-red-600">Error loading items: {itemsError}</p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {/* Withdrawal Form */}
+          <WithdrawalForm items={items as any} />
 
-        {/* Recent Withdrawals */}
-        <WithdrawalsList withdrawals={withdrawals} />
-      </div>
+          {/* Recent Withdrawals */}
+          {withdrawalsError ? (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <p className="text-red-600">Error loading withdrawals: {withdrawalsError}</p>
+            </div>
+          ) : (
+            <WithdrawalsList withdrawals={withdrawals as any} />
+          )}
+        </div>
+      )}
     </div>
   )
 }
